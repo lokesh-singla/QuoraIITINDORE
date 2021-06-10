@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}
+BlogPost
+{% endblock title %}
+
+{% block blogactive %}
+active
+{% endblock blogactive %}
+
+{% block body %}
+
+{% load get_dict %}
+<div class="container my-3">
+    <div class="blog-post">
+        <h2 class="blog-post-title">{{post.0.2}}</h2>
+        <p class="blog-post-meta">by <a href="/{{post.0.1}}">{{post.0.1}}</a></p>
+        <h4>Description:</h4>
+        <p>{{post.0.3|safe}}</p>
+        <hr>
+    </div>
+</div>
+<div class="container">
+    <h2>Comments</h2>
+    {% if user.is_authenticated %}
+    <form action="/blog/postComment/{{post.0.0}}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="exampleInputEmail1">Post Comment </label>
+            <input type="text" class="form-control" name="comment" placeholder="Enter comment here">
+        </div>
+        <input type="hidden" name="postSno" value="{{post.0.0}}">
+        <input type="hidden" name="parentSno" value="">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    {% else %}
+    Please login to comment
+    {% endif %}
+    {% for comment in comments %}
+    <div class="row my-3">
+        <div class="col-md-1  ">
+            <img class="rounded mx-auto d-block w-100 p-2" src="/static/user.png" alt="user">
+        </div>
+        <div class="col-md-11 ">
+            <b> {{comment.1}} </b>
+            <div>by {{comment.2}} </div>
+            <div class="reply mx-0">
+                {% if user.is_authenticated %}
+                <button class="btn btn-sm btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#replyBox{{comment.0}}" aria-expanded="false" aria-controls="replyBox{{comment.0}}">
+                    Reply
+                </button>
+                <div class="collapse" id="replyBox{{comment.0}}">
+                    <div class="card card-body my-2">
+                        <form action="/blog/postComment/{{post.0.0}}" method="post">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="comment">Post a Reply </label>
+                                <input type="text" class="form-control" name="comment" placeholder="Enter comment here">
+                                <input type="hidden" name="parentSno" value="{{comment.0}}">
+                            </div>
+                            <input type="hidden" name="postSno" value="{{post.0.0}}">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                    <button class="btn btn-sm btn-primary" type="button" data-toggle="collapse" data-target="#loginModal" aria-expanded="false" aria-controls="replyBox{{comment.0}}">
+                        Login to reply
+                    </button>
+                {% endif %}
+                <div class="replies my-2 ">
+                    {% for reply in replyDict|get_val:comment.0 %}
+                    <div class="row my-2">
+                        <div class="col-md-1 ">
+                            <img class="rounded mx-auto d-block w-75 my-2 border border-dark p-2" src="/static/user.png" alt="user">
+                        </div>
+                        <div class="col-md-11 ml-6">
+                            <div class="col-md-11 ">
+                                <b> {{reply.1}} </b>
+                                <div>by {{reply.2}}</div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock body %}

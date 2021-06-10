@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+About
+{% endblock title %}
+
+{% block aboutactive %}
+ active 
+{% endblock aboutactive %}
+
+{% block body %}
+{% if user.is_authenticated %}
+<style>
+  pre{
+    white-space: pre-wrap;
+  }
+</style>
+<div class="container my-3">
+    <h1>Write your query</h1>
+<form action="query" method="post" id="check" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="name" class="form-label">Question:</label>
+      <input type="name" class="form-control" id="name" name="name" aria-describedby="name">
+    </div>
+    <div class="mb-3">
+        <label for="content" class="form-label">Description:</label>
+        <pre><textarea class="form-control pre" name="content" id="content" cols="30" rows="5"></textarea></pre>
+      </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{% else %}
+<div class="container my-10">
+  <div class="row no-gutters border rounded shadow-sm h-md-250 my-5 position-relative" >
+    <h1>Please login to ask your query</h1>
+</div>
+</div>
+{% endif %}
+{% endblock body %}
